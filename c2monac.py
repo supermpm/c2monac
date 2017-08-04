@@ -273,7 +273,7 @@ def riesgo(papel,v=None):
     analiza_resultados(b,v=1)
 
 
-    #analisis de riesgo de cartera por Markowitz
+#analisis de riesgo de cartera por Markowitz
 def markowitz(papeles, pesos):
 
     varmat = np.asmatrix(papeles)
