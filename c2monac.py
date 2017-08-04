@@ -71,8 +71,7 @@ def best_fit_distribution(data, bins=15, ax=None):
             stats.dgamma,stats.dweibull,stats.erlang,stats.expon,stats.exponnorm,stats.exponweib,stats.exponpow,stats.f,stats.fatiguelife,stats.fisk,
             stats.foldcauchy,stats.foldnorm,stats.frechet_r,stats.frechet_l,stats.genlogistic,stats.genpareto,stats.gennorm,stats.genexpon,
             stats.genextreme,stats.gausshyper,stats.gamma,stats.gengamma,stats.genhalflogistic,stats.gilbrat,stats.gompertz,stats.gumbel_r,
-                stats.gumbel_l,stats.halfcauchy,stats.halflogistic,stats.halfnorm,stats.halfgennorm,stats.hypsecant,stats.invgamma,stats.invgauss,
-    #        stats.invweibull,stats.johnsonsb,stats.johnsonsu,stats.ksone,stats.kstats.obign,stats.laplace,stats.levy,stats.levy_l,stats.levy_stats.ble,
+            stats.gumbel_l,stats.halfcauchy,stats.halflogistic,stats.halfnorm,stats.halfgennorm,stats.hypsecant,stats.invgamma,stats.invgauss,
             stats.invweibull,stats.johnsonsb,stats.johnsonsu,stats.ksone,stats.laplace,
             stats.logistic,stats.loggamma,stats.loglaplace,stats.lognorm,stats.lomax,stats.maxwell,stats.mielke,stats.nakagami,stats.ncx2,stats.ncf,
             stats.nct,stats.norm,stats.pareto,stats.pearson3,stats.powerlaw,stats.powerlognorm,stats.powernorm,stats.rdist,stats.reciprocal,
@@ -120,9 +119,6 @@ def best_fit_distribution(data, bins=15, ax=None):
 def fit_by_core(data,distribution,x,y):
         
     
-        # fit dist to data
-#        if self.verbose is not None:
-#            print(distribution.name, end=', ')
         params = distribution.fit(data)
     
         # Separate parts of parameters
@@ -205,11 +201,6 @@ def analiza_resultados(resultados,v=None):
 #            if self.verbose is not None:
                 print("Distribucion Resultados: Compatible con Normal")
         
-#                if self.precio_compra is not None:
-#                    print("% media", str((rmean/self.precio_compra)-1), "% -std:",str(((rmean-rstd)/self.precio_compra)-1), "+std:", str(((rmean+rstd)/self.precio_compra)-1))
-#                    acum_cierre = stats.norm.cdf(self.precio_compra,rparams[0], rparams[1])
-#                else:
-#                print("Ultimo Cierre:",str(self.ultimo_cierre))
                 print("% media", str((rmean/float(self.ultimo_cierre))-1), "% -std:",str(((rmean-rstd)/float(self.ultimo_cierre))-1), "+std:", str(((rmean+rstd)/float(self.ultimo_cierre))-1))
                 acum_cierre = stats.norm.cdf(self.ultimo_cierre,rparams[0], rparams[1])
         
@@ -248,9 +239,7 @@ def analiza_resultados(resultados,v=None):
             if v is not None:
                 print("\n")
                 print("Distribucion Resultados:", rdist, "Params:", rparams)
-#                print("Ultimo Cierre:",str(self.ultimo_cierre))
                 print("media:", rmean, "std:", rstd, "m-s:", str(rmean-rstd), "m+s:", str(rmean + rstd), "m-2s:", str(rmean-2*rstd), "m+2s:", str(rmean + 2*rstd))
-#                print("% media", str((rmean/float(self.ultimo_cierre))-1), "% -std:",str(((rmean-rstd)/float(self.ultimo_cierre))-1), "+std:", str(((rmean+rstd)/float(self.ultimo_cierre))-1))
                 print("Prob media:",rpstd,"-std:", str(rpstd1), "+std:", str(rpstd2), "-2std:", str(rpstd3), "+2std:", str(rpstd4)) 
         
         if v is not None:
