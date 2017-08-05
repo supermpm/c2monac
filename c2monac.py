@@ -203,17 +203,7 @@ def analiza_resultados(resultados,v=None):
             median = np.median(resultados)
             rparams = stats.norm.fit(resultados)
             if v is not None:
-#            if self.verbose is not None:
                 print("Distribucion Resultados: Compatible con Normal")
-        
-#                print("% media", str((rmean/float(self.ultimo_cierre))-1), "% -std:",
-#                       str(((rmean-rstd)/float(self.ultimo_cierre))-1), "+std:", 
-#                       str(((rmean+rstd)/float(self.ultimo_cierre))-1))
-#                acum_cierre = stats.norm.cdf(self.ultimo_cierre,rparams[0], rparams[1])
-        
-        
-#                print("Prob Acumulada a Cierre:",acum_cierre)
-        
                 print("Media:", str(rmean), "Acum:",stats.norm.cdf(rmean,rparams[0], rparams[1]))
                 print("Std:", str(rstd))
                 print("-std:", str(rmean-rstd),"Acum:",stats.norm.cdf(rmean-rstd,rparams[0], rparams[1]))
