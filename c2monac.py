@@ -60,58 +60,62 @@ def cierre(pddatos):
 
 #calcula distribucion mejor distribucion para un histograma
 def best_fit_distribution(data, bins=15, ax=None):
-        """Model data by finding best fit distribution to data"""
-        # Get histogram of original data
-        y, x = np.histogram(data, bins=bins, density=True)
-        x = (x + np.roll(x, -1))[:-1] / 2.0
+    """Model data by finding best fit distribution to data"""
+    # Get histogram of original data
+    y, x = np.histogram(data, bins=bins, density=True)
+    x = (x + np.roll(x, -1))[:-1] / 2.0
         
-        # Distributions to check
-        DISTRIBUTIONS = [        
-            stats.alpha,stats.anglit,stats.arcsine,stats.beta,stats.betaprime,stats.bradford,stats.burr,stats.cauchy,stats.chi,stats.chi2,stats.cosine,
-            stats.dgamma,stats.dweibull,stats.erlang,stats.expon,stats.exponnorm,stats.exponweib,stats.exponpow,stats.f,stats.fatiguelife,stats.fisk,
-            stats.foldcauchy,stats.foldnorm,stats.frechet_r,stats.frechet_l,stats.genlogistic,stats.genpareto,stats.gennorm,stats.genexpon,
-            stats.genextreme,stats.gausshyper,stats.gamma,stats.gengamma,stats.genhalflogistic,stats.gilbrat,stats.gompertz,stats.gumbel_r,
-            stats.gumbel_l,stats.halfcauchy,stats.halflogistic,stats.halfnorm,stats.halfgennorm,stats.hypsecant,stats.invgamma,stats.invgauss,
-            stats.invweibull,stats.johnsonsb,stats.johnsonsu,stats.ksone,stats.laplace,
-            stats.logistic,stats.loggamma,stats.loglaplace,stats.lognorm,stats.lomax,stats.maxwell,stats.mielke,stats.nakagami,stats.ncx2,stats.ncf,
-            stats.nct,stats.norm,stats.pareto,stats.pearson3,stats.powerlaw,stats.powerlognorm,stats.powernorm,stats.rdist,stats.reciprocal,
-            stats.rayleigh,stats.rice,stats.recipinvgauss,stats.semicircular,stats.t,stats.triang,stats.truncexpon,stats.truncnorm,stats.tukeylambda,
-            stats.uniform,stats.vonmises,stats.vonmises_line,stats.wald,stats.weibull_min,stats.weibull_max,stats.wrapcauchy
-        ]
+    # Distributions to check
+    DISTRIBUTIONS = [        
+        stats.alpha,stats.anglit,stats.arcsine,stats.beta,stats.betaprime,stats.bradford,stats.burr,
+        stats.cauchy,stats.chi,stats.chi2,stats.cosine, stats.dgamma,stats.dweibull,stats.erlang,
+        stats.expon,stats.exponnorm,stats.exponweib,stats.exponpow,stats.f,stats.fatiguelife,stats.fisk,
+        stats.foldcauchy,stats.foldnorm,stats.frechet_r,stats.frechet_l,stats.genlogistic,stats.genpareto,
+        stats.gennorm,stats.genexpon,stats.genextreme,stats.gausshyper,stats.gamma,stats.gengamma,
+        stats.genhalflogistic,stats.gilbrat,stats.gompertz,stats.gumbel_r, stats.gumbel_l,stats.halfcauchy,
+        stats.halflogistic,stats.halfnorm,stats.halfgennorm,stats.hypsecant,stats.invgamma,stats.invgauss,
+        stats.invweibull,stats.johnsonsb,stats.johnsonsu,stats.ksone,stats.laplace,stats.logistic,
+        stats.loggamma,stats.loglaplace,stats.lognorm,stats.lomax,stats.maxwell,stats.mielke,stats.nakagami,
+        stats.ncx2,stats.ncf,stats.nct,stats.norm,stats.pareto,stats.pearson3,stats.powerlaw,stats.powerlognorm,
+        stats.powernorm,stats.rdist,stats.reciprocal, stats.rayleigh,stats.rice,stats.recipinvgauss,
+        stats.semicircular,stats.t,stats.triang,stats.truncexpon,stats.truncnorm,stats.tukeylambda,
+        stats.uniform,stats.vonmises,stats.vonmises_line,stats.wald,stats.weibull_min,
+        stats.weibull_max,stats.wrapcauchy
+    ]
         
-        # Best holders
-        best_distribution = stats.norm
-        best_params = (0.0, 1.0)
-        best_sse = np.inf
+    # Best holders
+    best_distribution = stats.norm
+    best_params = (0.0, 1.0)
+    best_sse = np.inf
     
-        # Estimate distribution parameters from data
-        r = []
-        for distribution in DISTRIBUTIONS:
+    # Estimate distribution parameters from data
+    r = []
+    for distribution in DISTRIBUTIONS:
     
-            # Try to fit the distribution
-            try:
-                # Ignore warnings from data that can't be fit
-                with warnings.catch_warnings():
-                    warnings.filterwarnings('ignore')
+        # Try to fit the distribution
+        try:
+            # Ignore warnings from data that can't be fit
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore')
     
-                    count = multiprocessing.cpu_count()
-                    pool = multiprocessing.Pool(processes=count)
+                count = multiprocessing.cpu_count()
+                pool = multiprocessing.Pool(processes=count)
+                    
+                r.append(pool.apply_async(fit_by_core, args=[data, distribution,x,y]))
+                pool.close()
+                pool.join()
     
-                    r.append(pool.apply_async(fit_by_core, args=[data, distribution,x,y]))
-                    pool.close()
-                    pool.join()
     
+        except Exception:
+            pass
     
-            except Exception:
-                pass
+    for k in r:
+        if best_sse > k.get()[0] > 0:
+            best_distribution = k.get()[1]
+            best_params = k.get()[2]
+            best_sse = k.get()[0]
     
-        for k in r:
-            if best_sse > k.get()[0] > 0:
-                best_distribution = k.get()[1]
-                best_params = k.get()[2]
-                best_sse = k.get()[0]
-    
-        return (best_distribution.name, best_params)
+    return (best_distribution.name, best_params)
     
         
         
@@ -119,66 +123,67 @@ def best_fit_distribution(data, bins=15, ax=None):
 def fit_by_core(data,distribution,x,y):
         
     
-        params = distribution.fit(data)
-    
-        # Separate parts of parameters
-        arg = params[:-2]
-        loc = params[-2]
-        scale = params[-1]
-        
-        # Calculate fitted PDF and error with fit in distribution
-        pdf = distribution.pdf(x, loc=loc, scale=scale, *arg)
-        sse = np.sum(np.power(y - pdf, 2.0))
-    
-        return sse, distribution, params
+    params = distribution.fit(data)
+
+    # Separate parts of parameters
+    arg = params[:-2]
+    loc = params[-2]
+    scale = params[-1]
+
+    # Calculate fitted PDF and error with fit in distribution
+    pdf = distribution.pdf(x, loc=loc, scale=scale, *arg)
+    sse = np.sum(np.power(y - pdf, 2.0))
+
+    return sse, distribution, params
 
 
 #calulo valor a futuro por montecarlo
-def simulacion(papel,v=None):
+def simulacion(papel,dias=None,v=None):
 
-        val = Stock()
-        val.papel = papel
-        datos = val.trae_datos()
+    val = Stock()
+    val.papel = papel
+    if dias is None:
         dias = val.periodo
-        if v is not None:
-            val.verbose = 1
+    datos = val.trae_datos()
+    if v is not None:
+        val.verbose = 1
 
-        if val.verbose is not None:
-            print("Datos Obtenidos")
-            print("Verificando Distribucion")
+    if val.verbose is not None:
+        print("Datos Obtenidos")
+        print("Verificando Distribucion")
 
-        clases_hist = __cant_clases_hist(len(cierre(datos)))
+    clases_hist = __cant_clases_hist(len(cierre(datos)))
 
-        b = variaciones_diarias(datos)
+    b = variaciones_diarias(datos)
 
-        dist, dparams = best_fit_distribution(b, bins = clases_hist)
+    dist, dparams = best_fit_distribution(b, bins = clases_hist)
 
-        if val.verbose is not None:
-            print("\n")
-            print("Distribucion Movimientos Diarios:",dist+", Params:",dparams)
-            print("Comienzo Simulacion")
+    if val.verbose is not None:
+        print("\n")
+        print("Distribucion Movimientos Diarios:",dist+", Params:",dparams)
+        print("Comienzo Simulacion")
 
 
 
-        f40d = []
-        #Genera objeto stats."distribucion" para no tener que hacer un if
-        #por cada distribucion, por ejemplo scipy.stats.norm
-        ob = eval('stats.'+dist)
+    f40d = []
+    #Genera objeto stats."distribucion" para no tener que hacer un if
+    #por cada distribucion, por ejemplo scipy.stats.norm
+    ob = eval('stats.'+dist)
 
-        for x in range(0,5000):
-            s = ob.rvs(*dparams, size=dias)
-            f = functools.reduce(lambda x,y: x+y, s) + val.ultimo_cierre
-            f40d.append(float(f))
+    for x in range(0,5000):
+        s = ob.rvs(*dparams, size=dias)
+        f = functools.reduce(lambda x,y: x+y, s) + val.ultimo_cierre
+        f40d.append(float(f))
 
-        if val.verbose is not None:
-            print("Fin simulacion")
+    if val.verbose is not None:
+        print("Fin simulacion")
 
 #        if val.verbose is not None:
-            plt.hist(b, 15)
-            plt.grid(True)
-            plt.show()
+        plt.hist(b, 15)
+        plt.grid(True)
+        plt.show()
 
-        return f40d
+    return f40d
 
 
 #analisis de resultados de simulacion de montecarlo
@@ -201,11 +206,13 @@ def analiza_resultados(resultados,v=None):
 #            if self.verbose is not None:
                 print("Distribucion Resultados: Compatible con Normal")
         
-                print("% media", str((rmean/float(self.ultimo_cierre))-1), "% -std:",str(((rmean-rstd)/float(self.ultimo_cierre))-1), "+std:", str(((rmean+rstd)/float(self.ultimo_cierre))-1))
-                acum_cierre = stats.norm.cdf(self.ultimo_cierre,rparams[0], rparams[1])
+#                print("% media", str((rmean/float(self.ultimo_cierre))-1), "% -std:",
+#                       str(((rmean-rstd)/float(self.ultimo_cierre))-1), "+std:", 
+#                       str(((rmean+rstd)/float(self.ultimo_cierre))-1))
+#                acum_cierre = stats.norm.cdf(self.ultimo_cierre,rparams[0], rparams[1])
         
         
-                print("Prob Acumulada a Cierre:",acum_cierre)
+#                print("Prob Acumulada a Cierre:",acum_cierre)
         
                 print("Media:", str(rmean), "Acum:",stats.norm.cdf(rmean,rparams[0], rparams[1]))
                 print("Std:", str(rstd))
@@ -239,8 +246,11 @@ def analiza_resultados(resultados,v=None):
             if v is not None:
                 print("\n")
                 print("Distribucion Resultados:", rdist, "Params:", rparams)
-                print("media:", rmean, "std:", rstd, "m-s:", str(rmean-rstd), "m+s:", str(rmean + rstd), "m-2s:", str(rmean-2*rstd), "m+2s:", str(rmean + 2*rstd))
-                print("Prob media:",rpstd,"-std:", str(rpstd1), "+std:", str(rpstd2), "-2std:", str(rpstd3), "+2std:", str(rpstd4)) 
+                print("media:", rmean, "std:", rstd, "m-s:", str(rmean-rstd), "m+s:", 
+                        str(rmean + rstd), "m-2s:", str(rmean-2*rstd), "m+2s:", 
+                        str(rmean + 2*rstd))
+                print("Prob media:",rpstd,"-std:", str(rpstd1), "+std:", str(rpstd2), "-2std:", 
+                        str(rpstd3), "+2std:", str(rpstd4)) 
         
         if v is not None:
             plt.hist(resultados,25)
