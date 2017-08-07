@@ -200,9 +200,10 @@ def analiza_resultados(resultados,v=None):
         
             rmean = np.mean(resultados) 
             rstd = np.std(resultados)
-            median = np.median(resultados)
-            rparams = stats.norm.fit(resultados)
+
             if v is not None:
+                median = np.median(resultados)
+                rparams = stats.norm.fit(resultados)
                 print("Distribucion Resultados: Compatible con Normal")
                 print("Media:", str(rmean), "Acum:",stats.norm.cdf(rmean,rparams[0], rparams[1]))
                 print("Std:", str(rstd))
@@ -210,6 +211,8 @@ def analiza_resultados(resultados,v=None):
                 print("+std:", str(rmean+rstd),"Acum:",stats.norm.cdf(rmean+rstd,rparams[0], rparams[1]))
                 print("-2std:", str(rmean-2*rstd),"Acum:",stats.norm.cdf(rmean-2*rstd,rparams[0], rparams[1]))
                 print("+2std:", str(rmean+2*rstd),"Acum:",stats.norm.cdf(rmean+2*rstd,rparams[0], rparams[1]))
+
+            return ('normal',(rmean,rstd))
         
         
         else: 
@@ -223,17 +226,18 @@ def analiza_resultados(resultados,v=None):
             
             #Genera objeto stats."distribucion" para no tener que hacer un if
             #por cada distribucion, por ejemplo scipy.stats.norm
-            ob = eval('stats.' + rdist)
-
-            rmean = ob.mean(*rparams)
-            rstd = ob.std(*rparams)
-            rpstd = ob.cdf(rmean, *rparams)
-            rpstd1 = ob.cdf(rmean-rstd, *rparams)
-            rpstd2 = ob.cdf(rmean+rstd, *rparams)
-            rpstd3 = ob.cdf(rmean-(2*rstd), *rparams)
-            rpstd4 = ob.cdf(rmean+(2*rstd), *rparams)
 
             if v is not None:
+                ob = eval('stats.' + rdist)
+
+                rmean = ob.mean(*rparams)
+                rstd = ob.std(*rparams)
+                rpstd = ob.cdf(rmean, *rparams)
+                rpstd1 = ob.cdf(rmean-rstd, *rparams)
+                rpstd2 = ob.cdf(rmean+rstd, *rparams)
+                rpstd3 = ob.cdf(rmean-(2*rstd), *rparams)
+                rpstd4 = ob.cdf(rmean+(2*rstd), *rparams)
+
                 print("\n")
                 print("Distribucion Resultados:", rdist, "Params:", rparams)
                 print("media:", rmean, "std:", rstd, "m-s:", str(rmean-rstd), "m+s:", 
@@ -241,11 +245,12 @@ def analiza_resultados(resultados,v=None):
                         str(rmean + 2*rstd))
                 print("Prob media:",rpstd,"-std:", str(rpstd1), "+std:", str(rpstd2), "-2std:", 
                         str(rpstd3), "+2std:", str(rpstd4)) 
-        
-        if v is not None:
-            plt.hist(resultados,25)
-            plt.grid(True)
-            plt.show()
+#        if v is not None:
+                plt.hist(resultados,25)
+                plt.grid(True)
+                plt.show()
+
+            return (rdist, rparams)
             
 #calculo a futuro de carteta por montecarlo
 def simula_cartera(*resultados):
