@@ -1,5 +1,5 @@
-import metbas
-import stockdefs
+from .metbas import *
+from .stockdefs import *
 import functools
 import numpy as np
 from scipy import stats
