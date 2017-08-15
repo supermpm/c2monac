@@ -185,6 +185,31 @@ def simulacion(papel,dias=None,v=None):
 
     return f40d
 
+    #calulo valor a futuro por montecarlo bootstraping
+def montecarlobs(papel,dias=None):
+
+    val = Stock()
+    val.papel = papel
+    if dias is None:
+        dias = val.periodo
+
+    datos = val.trae_datos()
+
+    b = variaciones_diarias(datos)
+
+
+    f40d = []
+    for x in range(0,5000):
+        rnd = np.random.randint(0,len(b), size=dias)
+        k = []
+        for i in rnd:
+            k.append(b[i])
+
+        f = functools.reduce(lambda x,y: x+y, k) + val.ultimo_cierre
+        f40d.append(float(f))
+
+
+    return f40d
 
 #analisis de resultados de simulacion de montecarlo
 def analiza_resultados(resultados,v=None):
@@ -201,24 +226,10 @@ def analiza_resultados(resultados,v=None):
             rmean = np.mean(resultados) 
             rstd = np.std(resultados)
 
-            if v is not None:
-                median = np.median(resultados)
-                rparams = stats.norm.fit(resultados)
-                print("Distribucion Resultados: Compatible con Normal")
-                print("Media:", str(rmean), "Acum:",stats.norm.cdf(rmean,rparams[0], rparams[1]))
-                print("Std:", str(rstd))
-                print("-std:", str(rmean-rstd),"Acum:",stats.norm.cdf(rmean-rstd,rparams[0], rparams[1]))
-                print("+std:", str(rmean+rstd),"Acum:",stats.norm.cdf(rmean+rstd,rparams[0], rparams[1]))
-                print("-2std:", str(rmean-2*rstd),"Acum:",stats.norm.cdf(rmean-2*rstd,rparams[0], rparams[1]))
-                print("+2std:", str(rmean+2*rstd),"Acum:",stats.norm.cdf(rmean+2*rstd,rparams[0], rparams[1]))
-
             return ('normal',(rmean,rstd))
         
         
         else: 
-            if v is not None:
-                print("\n")
-                print("pvalor:", str(pvalue), "No Compatible con Normal, Verificando Distribucion" )
 
             clases_hist = __cant_clases_hist(len(resultados))
             rdist, rparams = best_fit_distribution( resultados, bins = clases_hist)
@@ -226,29 +237,8 @@ def analiza_resultados(resultados,v=None):
             
             #Genera objeto stats."distribucion" para no tener que hacer un if
             #por cada distribucion, por ejemplo scipy.stats.norm
+#            ob = eval('stats.' + rdist)
 
-            if v is not None:
-                ob = eval('stats.' + rdist)
-
-                rmean = ob.mean(*rparams)
-                rstd = ob.std(*rparams)
-                rpstd = ob.cdf(rmean, *rparams)
-                rpstd1 = ob.cdf(rmean-rstd, *rparams)
-                rpstd2 = ob.cdf(rmean+rstd, *rparams)
-                rpstd3 = ob.cdf(rmean-(2*rstd), *rparams)
-                rpstd4 = ob.cdf(rmean+(2*rstd), *rparams)
-
-                print("\n")
-                print("Distribucion Resultados:", rdist, "Params:", rparams)
-                print("media:", rmean, "std:", rstd, "m-s:", str(rmean-rstd), "m+s:", 
-                        str(rmean + rstd), "m-2s:", str(rmean-2*rstd), "m+2s:", 
-                        str(rmean + 2*rstd))
-                print("Prob media:",rpstd,"-std:", str(rpstd1), "+std:", str(rpstd2), "-2std:", 
-                        str(rpstd3), "+2std:", str(rpstd4)) 
-#        if v is not None:
-                plt.hist(resultados,25)
-                plt.grid(True)
-                plt.show()
 
             return (rdist, rparams)
             
@@ -363,6 +353,7 @@ def mvarcorr(papel):
     print("Proporcion mayor a 0:",ma / len(b))
     print("Proporcion menor a 0:",me / len(b))
     print("Relacion:",(ma/me)-1 )
+
 
 
 def comparacion(*papeles,desde=None):
