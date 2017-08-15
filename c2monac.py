@@ -373,3 +373,4 @@ def comparacion(*papeles,desde=None):
     plt.show()
         
 
+#pp
