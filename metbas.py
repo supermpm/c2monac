@@ -1,6 +1,6 @@
 #import datetime
 import warnings
-import stockdefs
+from .stockdefs import *
 import subprocess
 import numpy as np
 #import pandas as pd
