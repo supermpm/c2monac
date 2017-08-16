@@ -1,5 +1,6 @@
-from .metbas import *
+from .misc import *
 from .stockdefs import *
+#import .stockdefs as st
 import functools
 import numpy as np
 from scipy import stats
@@ -10,17 +11,18 @@ import matplotlib.pyplot as plt
 def montecarlo(papel,dias=None,v=None):
     """Calulo valor a futuro por montecarlo"""
 
-    val = stockdefs.Stock()
+    val = Stock()
+    M = Cbas()
     val.papel = papel
     if dias is None:
         dias = val.periodo
     datos = val.trae_datos()
 
-    clases_hist = metbas.cant_clases_hist(len(metbas.cierre(datos)))
+    clases_hist = M.cant_clases_hist(len(M.cierre(datos)))
 
-    b = metbas.variaciones_diarias(datos)
+    b = M.variaciones_diarias(datos)
 
-    dist, dparams = metbas.best_fit_distribution(b, bins = clases_hist)
+    dist, dparams = M.best_fit_distribution(b, bins = clases_hist)
 
 
     f40d = []
@@ -39,14 +41,16 @@ def montecarlo(papel,dias=None,v=None):
 def montecarlobs(papel,dias=None):
     """Calulo valor a futuro por montecarlo bootstraping"""
 
-    val = stockdefs.Stock()
+#    val = stockdefs.Stock()
+    val = Stock()
+    M = Cbas()
     val.papel = papel
     if dias is None:
         dias = val.periodo
 
     datos = val.trae_datos()
 
-    b = metbas.variaciones_diarias(datos)
+    b = M.variaciones_diarias(datos)
 
 
     f40d = []
@@ -66,6 +70,7 @@ def montecarlobs(papel,dias=None):
 def analiza_resultados(resultados):
     """Analisis de resultados de simulaciones"""
 
+    M = Cbas()
 
     normstat, pvalue = stats.mstats.normaltest(resultados)
         
@@ -78,8 +83,8 @@ def analiza_resultados(resultados):
         
     else: 
 
-        clases_hist = metbas.ant_clases_hist(len(resultados))
-        rdist, rparams = metbas.best_fit_distribution( resultados, bins = clases_hist)
+        clases_hist = M.cant_clases_hist(len(resultados))
+        rdist, rparams = M.best_fit_distribution( resultados, bins = clases_hist)
 
 
         return (rdist, rparams)
