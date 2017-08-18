@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 
 #Calcula cantidad de clases del histograma
-def cant_clases_hist(self,cant_datos):
+def cant_clases_hist(cant_datos):
     """Calculo de clases de histograma"""
 
     if cant_datos > 1000:
@@ -21,20 +21,20 @@ def cant_clases_hist(self,cant_datos):
 
 
 #obtiene lista de cierres del pandas data object
-def cierre(self,pddatos):
+def cierre(pddatos):
     """Obtiene valor de cierre desde dato tipo pandas"""
     return  [ i for i in pddatos['Close'] ]
 
 
 #calcula variaciones diarias del papel
-def variaciones_diarias(self, pddatos):
+def variaciones_diarias(pddatos):
     """Calcula variaciones diarias del papel"""
-    a = self.cierre(pddatos)
+    a = cierre(pddatos)
     return  [i for i in map(lambda x,y:y-x, a[:-1], a[1:]) ]
 
 
 #calcula distribucion mejor distribucion para un histograma
-def best_fit_distribution(self,data, bins=15, ax=None):
+def best_fit_distribution(data, bins=15, ax=None):
     """Model data by finding best fit distribution to data"""
     # Get histogram of original data
     y, x = np.histogram(data, bins=bins, density=True)
@@ -76,7 +76,7 @@ def best_fit_distribution(self,data, bins=15, ax=None):
                 count = multiprocessing.cpu_count()
                 pool = multiprocessing.Pool(processes=count)
                     
-                r.append(pool.apply_async(self.fit_by_core, args=[data, distribution,x,y]))
+                r.append(pool.apply_async(fit_by_core, args=[data, distribution,x,y]))
                 pool.close()
                 pool.join()
     
@@ -95,7 +95,7 @@ def best_fit_distribution(self,data, bins=15, ax=None):
         
         
 #manda calculo de distribuciones a todos los cores
-def fit_by_core(self,data,distribution,x,y):
+def fit_by_core(data,distribution,x,y):
     """Procesa en cada core la distribucion de probabilidad"""
         
     params = distribution.fit(data)
@@ -113,7 +113,7 @@ def fit_by_core(self,data,distribution,x,y):
 
 
 #calcula media y std para analisis de riesgo
-def riesgo(self,papel,v=None):
+def riesgo(papel,v=None):
     """calcula riesgo de papel"""
     val = stockdefs.Stock()
     val.papel = papel
@@ -124,12 +124,12 @@ def riesgo(self,papel,v=None):
 #        print("Datos Obtenidos")
 #        print("Verificando Distribucion")
 
-    b = self.variaciones_diarias(datos)
+    b = variaciones_diarias(datos)
     analiza_resultados(b,v=1)
 
 
 #analisis de riesgo de cartera por Markowitz
-def markowitz(self,papeles, pesos):
+def markowitz(papeles, pesos):
     """Calculo de riesgo de cartera por Markowitz"""
 
     varmat = np.asmatrix(papeles)
@@ -147,7 +147,7 @@ def markowitz(self,papeles, pesos):
     return (mu, sigma)
 
 #grafica correlacion de valores de accion vs merv
-def mervcorr(self,papel):
+def mervcorr(papel):
     """Calcula y grafica correlacion de papel y merval"""
 
     import matplotlib.patches as mpatches
@@ -156,11 +156,11 @@ def mervcorr(self,papel):
     val.papel = 'iar'
 
     merv = val.trae_datos()
-    a = self.cierre(merv)
+    a = cierre(merv)
 
     val.papel = papel
     dpapel = val.trae_datos()
-    b = self.cierre(dpapel)
+    b = cierre(dpapel)
 
     r = stats.linregress(a,b)
     r_params = "r="+str(r[2])+" p="+str(r[3])
@@ -179,7 +179,7 @@ def mervcorr(self,papel):
 
 
 #grafica correlacion de variaciones diarias de accion vs merv
-def mvarcorr(self,papel):
+def mvarcorr(papel):
     """Calcula y grafica correlacion de variaciones diarias 
     entre papel y merval"""
 
@@ -189,11 +189,11 @@ def mvarcorr(self,papel):
     val.papel = 'iar'
 
     merv = val.trae_datos()
-    a = self.variaciones_diarias(merv)
+    a = variaciones_diarias(merv)
 
     val.papel = papel
     dpapel = val.trae_datos()
-    b = self.variaciones_diarias(dpapel)
+    b = variaciones_diarias(dpapel)
 
     r = stats.linregress(a,b)
     r_params = "r="+str(r[2])+" p="+str(r[3])
@@ -220,7 +220,7 @@ def mvarcorr(self,papel):
 
 
 
-def comparacion(self,*papeles, desde=None):
+def comparacion(*papeles, desde=None):
     """Grafica comparacion de papeles"""
 
     val = stockdefs.Stock()
