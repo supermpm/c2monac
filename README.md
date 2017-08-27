@@ -24,15 +24,17 @@ $ git clone https://github.com/supermpm/c2monac
 ### Estimacion del valor de pampa a 42 dias por Montecarlo:
 
 ```
-import c2monac.sim as sm
-sm.montecarlo('pamp')
+>>> import c2monac.sim as sm
+>>> sm.montecarlo('pamp')
+>>> sm.analiza_resultados(sim)
+('normal', (46.653857212320446, 4.1409944487857775))
 ```
 
 ### Grafico de correlacion entre indice merval y pamp:
 
 ```
-import c2monac.misc as misc
-misc.mervcorr('pamp')
+>>> import c2monac.misc as misc
+>>> misc.mervcorr('pamp')
 ```
 
 
