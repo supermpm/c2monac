@@ -36,3 +36,5 @@ $ git clone https://github.com/supermpm/c2monac
 >>> import c2monac.misc as misc
 >>> misc.mervcorr('pamp')
 ```
+
+La imagen generada se puede ver en este (link)[http://10mp.net/gitimg/pampco.png]
