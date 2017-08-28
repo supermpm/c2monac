@@ -152,7 +152,7 @@ def mervcorr(papel):
 
     import matplotlib.patches as mpatches
 
-    val = stockdefs.Stock()
+    val = Stock()
     val.papel = 'iar'
 
     merv = val.trae_datos()
