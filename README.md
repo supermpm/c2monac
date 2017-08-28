@@ -38,3 +38,23 @@ $ git clone https://github.com/supermpm/c2monac
 ```
 
 La imagen generada se puede ver en este [link](http://10mp.net/gitimg/pampco.png)
+
+### Cálculo de riesgo de cartera por Markowitz
+
+```
+>>> from c2monac.stockdefs import *
+>>> val = Stock()
+>>> val.papel = 'pamp'
+>>> pamp = val.trae_datos()
+>>> val.papel = 'agro'
+>>> agro = val.trae_datos()
+>>> bma = val.trae_datos()
+>>> val.papel = 'bma'
+>>> bma = val.trae_datos()
+>>> import c2monac.misc as msc
+>>> vpamp = msc.variaciones_diarias(pamp)
+>>> vagro = msc.variaciones_diarias(agro)
+>>> vbma = msc.variaciones_diarias(bma)
+>>> msc.markowitz( (vpamp,vagro,vbma), (.5,.25,.25))
+(matrix([[ 0.14346939]]), matrix([[ 0.93245608]]))
+```
