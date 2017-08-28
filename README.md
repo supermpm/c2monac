@@ -30,6 +30,24 @@ $ git clone https://github.com/supermpm/c2monac
 ('normal', (46.653857212320446, 4.1409944487857775))
 ```
 
+### Estimación del valor de pampa a 30 días por Montecarlo usando datos entre las fechas 28/02/2017 y 28/08/2017:
+
+```
+>>> import c2monac.sim as sm
+>>> sim = sm.montecarlo('pamp',30,'02/28/17','08/28/17')
+>>> sm.analiza_resultados(sim)
+('normal', (46.380645509577988, 4.2302062787977972))
+```
+
+### Estimación del valor de pampa a 30 días por Montecarlo con bootstraping usando datos entre las fechas 28/02/2017 y 28/08/2017:
+
+```
+>>> import c2monac.sim as sm
+>>> sim = sm.montecarlobs('pamp',30,'02/28/17','08/28/17')
+>>> sm.analiza_resultados(sim)
+('normal', (45.873440000000002, 4.3650124359960305))
+```
+
 ### Gráfico de correlación entre índice merval y pamp:
 
 ```

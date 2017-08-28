@@ -8,14 +8,19 @@ import matplotlib.pyplot as plt
 
 
 #calulo valor a futuro por montecarlo
-def montecarlo(papel,dias=None,v=None):
+def montecarlo(papel,dias=None, desde=None, hasta=None):
     """Calulo valor a futuro por montecarlo"""
 
     val = Stock()
-#    M = Cbas()
     val.papel = papel
+
     if dias is None:
         dias = val.periodo
+    if desde is not None:
+        val.desde = desde
+    if desde is not None:
+        val.hasta = hasta
+
     datos = val.trae_datos()
 
     clases_hist = cant_clases_hist(len(cierre(datos)))
@@ -38,15 +43,18 @@ def montecarlo(papel,dias=None,v=None):
     return f40d
 
 #calulo valor a futuro por montecarlo bootstraping
-def montecarlobs(papel,dias=None):
+def montecarlobs( papel, dias=None, desde=None, hasta=None):
     """Calulo valor a futuro por montecarlo bootstraping"""
 
-#    val = stockdefs.Stock()
     val = Stock()
-#    M = Cbas()
     val.papel = papel
+
     if dias is None:
         dias = val.periodo
+    if desde is not None:
+        val.desde = desde
+    if desde is not None:
+        val.hasta = hasta
 
     datos = val.trae_datos()
 
