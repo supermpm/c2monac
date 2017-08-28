@@ -91,14 +91,16 @@ La imagen generada se puede ver en este [link](http://10mp.net/gitimg/pampco.png
 ```
 >>> import c2monac.sim as sm
 >>> sim = sm.montecarlo_btc(dias=21,desde='2017-02-28',hasta='2017-08-28')
->>> sm.analiza_resultados(sim)
-('johnsonsu', (0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162))
-
+>>> dist, params = sm.analiza_resultados(sim)
+>>> dist
+'johnsonsu'
+>>> params
+(0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162)
 >>> import scipy.stats as stats
->>> stats.johnsonsu.mean(0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162)
+>>> stats.johnsonsu.mean(params[0],params[1],params[2],params[3])
 4727.6791419796873
->>> stats.johnsonsu.std(0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162)
+>>> stats.johnsonsu.std(params[0],params[1],params[2],params[3])
 513.92115572690886
->>> stats.johnsonsu.pdf(4727.67,0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162)
-0.00083025504002984458
+>>> stats.johnsonsu.pdf( 4727.6791, params[0], params[1], params[2], params[3])
+0.00083025567622726105
 ```
