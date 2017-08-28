@@ -37,4 +37,4 @@ $ git clone https://github.com/supermpm/c2monac
 >>> misc.mervcorr('pamp')
 ```
 
-La imagen generada se puede ver en este (link)[http://10mp.net/gitimg/pampco.png]
+La imagen generada se puede ver en este [link](http://10mp.net/gitimg/pampco.png)
