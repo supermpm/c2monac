@@ -1,6 +1,6 @@
 # C2monac análisis estadístico de mercados financieros
 
-C2monac es un soft en Python 3 para análisis de mercados financieros. Por el momento soporta solo acciones el mercado merval de Argentina pero en el futuro agregará soporte para otros mercados y bitcoins.
+C2monac es un soft en Python 3 para análisis de mercados financieros. Por el momento soporta solo acciones el mercado merval de Argentina y bitcoins (BTC) pero en el futuro agregará soporte para otros mercados.
 
 ## Requerimientos:
 
@@ -75,4 +75,30 @@ La imagen generada se puede ver en este [link](http://10mp.net/gitimg/pampco.png
 >>> vbma = msc.variaciones_diarias(bma)
 >>> msc.markowitz( (vpamp,vagro,vbma), (.5,.25,.25))
 (matrix([[ 0.14346939]]), matrix([[ 0.93245608]]))
+```
+
+### Estimación del valor del bitcoin a 42 días por Montecarlo:
+
+```
+>>> import c2monac.sim as sm
+>>> sim = sm.montecarlo_btc()
+>>> sm.analiza_resultados(sim)
+('normal', (4559.5009531976284, 397.88022695597328))
+```
+
+### Estimación del valor del bitcoin a 42 días por Montecarlo entre fechas:
+
+```
+>>> import c2monac.sim as sm
+>>> sim = sm.montecarlo_btc(dias=21,desde='2017-02-28',hasta='2017-08-28')
+>>> sm.analiza_resultados(sim)
+('johnsonsu', (0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162))
+
+>>> import scipy.stats as stats
+>>> stats.johnsonsu.mean(0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162)
+4727.6791419796873
+>>> stats.johnsonsu.std(0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162)
+513.92115572690886
+>>> stats.johnsonsu.pdf(4727.67,0.19352807920786852, 2.7513541601261418, 4826.8132852245153, 1318.2029555337162)
+0.00083025504002984458
 ```

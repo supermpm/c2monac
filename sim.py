@@ -108,3 +108,38 @@ def simula_cartera(*resultados):
         a.append(suma) 
 
     return a
+
+#--------------------------------------BTC----------------------------------
+def montecarlo_btc(dias=None, desde=None, hasta=None):
+    """Calulo valor a futuro por montecarlo"""
+
+    val = Btc()
+#    val.papel = papel
+
+    if dias is None:
+        dias = val.periodo
+    if desde is not None:
+        val.desde = desde
+    if desde is not None:
+        val.hasta = hasta
+
+    datos = val.trae_datos()
+
+    clases_hist = cant_clases_hist(len(datos))
+
+    b = variaciones_diarias_btc(datos)
+
+    dist, dparams = best_fit_distribution(b, bins = clases_hist)
+
+
+    f40d = []
+    #Genera objeto stats."distribucion" para no tener que hacer un if
+    #por cada distribucion, por ejemplo scipy.stats.norm
+    ob = eval('stats.'+dist)
+
+    for x in range(0,5000):
+        s = ob.rvs(*dparams, size=dias)
+        f = functools.reduce(lambda x,y: x+y, s) + val.ultimo_cierre
+        f40d.append(float(f))
+
+    return f40d

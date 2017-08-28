@@ -25,12 +25,15 @@ def cierre(pddatos):
     """Obtiene valor de cierre desde dato tipo pandas"""
     return  [ i for i in pddatos['Close'] ]
 
-
 #calcula variaciones diarias del papel
 def variaciones_diarias(pddatos):
     """Calcula variaciones diarias del papel"""
     a = cierre(pddatos)
     return  [i for i in map(lambda x,y:y-x, a[:-1], a[1:]) ]
+
+def variaciones_diarias_btc(datos):
+    """Calcula variaciones diarias del papel"""
+    return  [i for i in map(lambda x,y:y-x, datos[:-1], datos[1:]) ]
 
 
 #calcula distribucion mejor distribucion para un histograma
