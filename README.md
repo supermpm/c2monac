@@ -1,4 +1,4 @@
-# Análisis estadístico de mercados financieros
+# C2monac análisis estadístico de mercados financieros
 
 C2monac es un soft en Python 3 para análisis de mercados financieros. Por el momento soporta solo acciones el mercado merval de Argentina pero en el futuro agregará soporte para otros mercados y bitcoins.
 
