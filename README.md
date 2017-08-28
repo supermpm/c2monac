@@ -1,6 +1,6 @@
 # Análisis estadístico de mercados financieros
 
-C2monac es un soft en Python 3 para análisis de mercados financieros. Por el momento soporta solo acciones el mercado merval de Argentina pero en las próximas versiones agregara soporte para otros mercados y bitcoins.
+C2monac es un soft en Python 3 para análisis de mercados financieros. Por el momento soporta solo acciones el mercado merval de Argentina pero en el futuro agregará soporte para otros mercados y bitcoins.
 
 ## Requerimientos:
 
@@ -13,7 +13,7 @@ C2monac es un soft en Python 3 para análisis de mercados financieros. Por el mo
 
 
 
-### Instalacion:
+### Instalación:
 
 ```
 $ git clone https://github.com/supermpm/c2monac
@@ -21,20 +21,18 @@ $ git clone https://github.com/supermpm/c2monac
 
 ## Ejemplos:
 
-### Estimacion del valor de pampa a 42 dias por Montecarlo:
+### Estimación del valor de pampa a 42 días por Montecarlo:
 
 ```
 >>> import c2monac.sim as sm
->>> sm.montecarlo('pamp')
+>>> sim = sm.montecarlo('pamp')
 >>> sm.analiza_resultados(sim)
 ('normal', (46.653857212320446, 4.1409944487857775))
 ```
 
-### Grafico de correlacion entre indice merval y pamp:
+### Gráfico de correlación entre índice merval y pamp:
 
 ```
 >>> import c2monac.misc as misc
 >>> misc.mervcorr('pamp')
 ```
-
-
